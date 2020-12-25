@@ -1,14 +1,35 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 int g_N = 8;
 
 void ft_memset(char *arr, char c, int val)
 {
 	while(val--)
-		*arr = c;
-	val--;
+		*arr++ = c;
 }
+
+int ft_atoi(char *num)
+{
+	int			i;
+	long		sign;
+	long		result;
+
+	i = 0;
+	sign = 1;
+	result = 0;
+	while((num[i] >= 9 && num[i] <= 13) || num[i] == ' ')
+		i++;
+	if(num[i] == '-' || num[i] == '+')
+		if(num[i++] == '-')
+			sign = -1;
+	while(num[i] >= '0' && num[i] <= '9')
+	{
+		result = result * 10 + (num[i] - '0');
+		i++;
+	}
+	return (sign * result);
+}
+
 
 int N_Queens(int i, char *columns, char *y_equalX, char *y_equal_minusX)
 {
@@ -39,7 +60,7 @@ int N_Queens(int i, char *columns, char *y_equalX, char *y_equal_minusX)
 int main(int argc, char **argv)
 {
 	if(argc == 2)
-		g_N = atoi(argv[1]);
+		g_N = ft_atoi(argv[1]);
 	char col[g_N];
 	ft_memset(col, '\0', g_N);
 	char yX[g_N * 2 - 1];
