@@ -31,17 +31,17 @@ void	move(char *board, char choice)
 	board[i] = choice;
 }
 
-void player_move(char *board)
+void	player_move(char *board)
 {
 	move(board, g_player_choice);
 }
 
-void player2_move(char *board)
+void	player2_move(char *board)
 {
 	move(board, ai_choice);
 }
 
-void random_ai_move(char *board)
+void	random_ai_move(char *board)
 {
 	int i;
 
@@ -49,31 +49,26 @@ void random_ai_move(char *board)
 	i = rand() % 9;
 	printf("Random AI move is: \n");
 	while (board[i] != ' ')
-		if (i++ > 8)
+		if (++i > 8)
 			i = 0;
 	board[i] = ai_choice;
 }
 
-/*
-void	AI_move(char *board)
+void	ai_move(char *board)
 {
 	int i;
-	int ai_variants[8][2];
 
 	i = 0;
-
+	printf("AI move is: \n");
 	while (i < 8)
 	{
-		if (i != ' ')
-		{
-			ai_variants[i][0] = 0;
-			ai_variants[i][1] = 0;
-			continue;
-		}
+
 		i++;
 	}
+	board[i] = ai_choice;
 }
-*/
+
+
 
 int		check_result(char *board)
 {
