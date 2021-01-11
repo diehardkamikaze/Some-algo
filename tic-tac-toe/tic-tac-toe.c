@@ -27,7 +27,7 @@ void	player_move(char *board)
 	while(board[i] != ' ' && printf("Incorrect! Choose only empty cells!\n"));
 	board[i] = g_player_choice;
 }
-
+/*
 void	AI_move(char *board)
 {
 	int i;
@@ -43,14 +43,33 @@ void	AI_move(char *board)
 			ai_variants[i][1] = 0;
 			continue;
 		}
-		
 		i++;
 	}
 }
-
-void	check_result(char *board)
+*/
+int		check_result(char *board)
 {
+	int i;
+	int tmp;
 
+	i = 0;
+	tmp = board[0] + board[4] + board[8];
+	if (tmp == 237 || tmp == 264)
+		return tmp / 3;
+	tmp = board[2] + board[4] + board[6];
+	if (tmp == 237 || tmp == 264)
+		return tmp / 3;
+	while (i < 3)
+	{
+		tmp = board[0 + i * 3] + board[1 + i * 3] + board[2 + i * 3];
+		if (tmp == 237 || tmp == 264)
+			return tmp / 3;
+		tmp = board[0 + i] + board[3 + i] + board[6 + i];
+		if (tmp == 237 || tmp == 264)
+			return tmp / 3;
+		i++;
+	}
+	return (0);
 }
 
 //play_the_game!
@@ -66,5 +85,11 @@ int		main(void)
 	}
 	while (g_player_choice != 'X' && g_player_choice != 'O');
 	memset(board, ' ', 9);
+	while(1)
+	{
+		player_move(board);
+		show_board(board);
+		printf("\n%d\n", check_result(board));
+	}
 	return (0);
 }
