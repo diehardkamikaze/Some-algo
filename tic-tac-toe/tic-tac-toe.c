@@ -16,16 +16,26 @@ void	show_board(char *board)
 	}
 }
 
-void	player_move(char *board)
+void	move(char *board, char choice)
 {
 	int i;
-	printf("You play for %c\n", g_player_choice);
+	printf("You play for %c\n", choice);
 	do {
 		printf("Your move: (0 - 8): \n");
 		scanf("%d", &i);
 	}
 	while(board[i] != ' ' && printf("Incorrect! Choose only empty cells!\n"));
-	board[i] = g_player_choice;
+	board[i] = choice;
+}
+
+void player_move(char *board)
+{
+	move(board, g_player_choice);
+}
+
+void player2_move(char *board)
+{
+	move(board, 'O');
 }
 /*
 void	AI_move(char *board)
@@ -47,6 +57,8 @@ void	AI_move(char *board)
 	}
 }
 */
+
+
 int		check_result(char *board)
 {
 	int i;
@@ -72,7 +84,40 @@ int		check_result(char *board)
 	return (0);
 }
 
-//play_the_game!
+void	play_the_game(char *board)
+{
+	int moves_count;
+	int winner;
+	void (*player_one)(char *);
+	void (*player_two)(char *);
+
+	moves_count = 0;
+	player_one = &player2_move;//&AI_move;
+	player_two = &player2_move;//&AI_move;
+	if (g_player_choice == 'X')
+		player_one = &player_move;
+	else
+		player_two = &player_move;
+	while (moves_count < 9)
+	{
+		player_one(board);
+		show_board(board);
+		if (moves_count > 3 && (winner = check_result(board)) != 0)
+		{
+			printf("\n------\nPlayer %c is WINner!\n------\n", winner);
+			return;
+		}
+		moves_count++;
+		player_two(board);
+		show_board(board);
+		if (moves_count > 3 && (winner = check_result(board)) != 0)
+		{
+			printf("\n------\nPlayer %c is WINner!\n------\n", winner);
+			return;
+		}
+		moves_count++;
+	}
+}
 
 int		main(void)
 {
@@ -85,11 +130,6 @@ int		main(void)
 	}
 	while (g_player_choice != 'X' && g_player_choice != 'O');
 	memset(board, ' ', 9);
-	while(1)
-	{
-		player_move(board);
-		show_board(board);
-		printf("\n%d\n", check_result(board));
-	}
+	play_the_game(board);
 	return (0);
 }
