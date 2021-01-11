@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <time.h>
 
 char	g_player_choice;
+char 	ai_choice = 'X' ^ 'O';
 
 void	show_board(char *board)
 {
@@ -35,8 +38,22 @@ void player_move(char *board)
 
 void player2_move(char *board)
 {
-	move(board, 'O');
+	move(board, ai_choice);
 }
+
+void random_ai_move(char *board)
+{
+	int i;
+
+	srand(time(NULL));
+	i = rand() % 9;
+	printf("Random AI move is: \n");
+	while (board[i] != ' ')
+		if (i++ > 8)
+			i = 0;
+	board[i] = ai_choice;
+}
+
 /*
 void	AI_move(char *board)
 {
@@ -57,7 +74,6 @@ void	AI_move(char *board)
 	}
 }
 */
-
 
 int		check_result(char *board)
 {
@@ -92,8 +108,8 @@ void	play_the_game(char *board)
 	void (*player_two)(char *);
 
 	moves_count = 0;
-	player_one = &player2_move;//&AI_move;
-	player_two = &player2_move;//&AI_move;
+	player_one = &random_ai_move; //&AI_move;
+	player_two = &random_ai_move; //&AI_move;
 	if (g_player_choice == 'X')
 		player_one = &player_move;
 	else
@@ -129,6 +145,7 @@ int		main(void)
 		scanf(" %c", &g_player_choice); //whitespace specificator cool
 	}
 	while (g_player_choice != 'X' && g_player_choice != 'O');
+	ai_choice ^= g_player_choice;
 	memset(board, ' ', 9);
 	play_the_game(board);
 	return (0);
