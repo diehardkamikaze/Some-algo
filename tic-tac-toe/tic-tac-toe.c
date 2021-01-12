@@ -3,8 +3,13 @@
 #include <stdlib.h>
 #include <time.h>
 
+char	g_XO = 'X' ^ 'O';
 char	g_player_choice;
 char 	ai_choice = 'X' ^ 'O';
+int		moves_count = 0;
+
+int check_result(char *);
+int get_chances(char *board, char order, int move);
 
 void	show_board(char *board)
 {
@@ -57,20 +62,84 @@ void	random_ai_move(char *board)
 void	ai_move(char *board)
 {
 	int i;
+	int max = -1000;
+	int max_index = 0;
+	int temp;
 
 	i = 0;
 	printf("AI move is: \n");
 	while (i < 8)
 	{
-
+		if(board[i] != ' ')
+		{
+			i++;
+			continue;
+		}
+		board[i] = ai_choice;
+		temp = get_chances(board, g_player_choice, moves_count);
+		board[i] = ' ';
+		printf("%d\n",temp);
+		if(temp == 10000)
+		{
+			max_index = i;
+			break;
+		}
+		if (temp > max)
+		{
+			max = temp;
+			max_index = i;
+		}
 		i++;
 	}
-	board[i] = ai_choice;
+	board[max_index] = ai_choice;
 }
 
+int get_chances(char *board, char order, int move)
+{
+	int i;
+	int result;
+	int temp;
 
+	i = 0;
+	result = 0;
+	temp = check_result(board);
+//	printf("temp %d\n", temp);
+//	show_board(board);
+	//char c;
+	//scanf(" %c", &c);
+	if (temp == ai_choice)
+		return (10000);
+	if (temp == g_player_choice)
+		return (-1);
+	if (move == 9)
+		return (0);
 
-int		check_result(char *board)
+	while (i < 9)
+	{
+		if (board[i] != ' ')
+		{
+			i++;
+			continue;
+		}
+		board[i] = order;
+		temp = get_chances(board, g_XO ^ order, move + 1);
+		if (temp == 0)
+			result += 1;
+		if (temp >= 10000)
+			result += temp;
+		if (temp < 0 && order != ai_choice)
+		{
+			board[i] = ' ';
+			return (-1);
+		}
+		board[i] = ' ';
+		i++;
+	}
+
+	return (result);
+}
+
+int check_result(char *board)
 {
 	int i;
 	int tmp;
@@ -97,14 +166,13 @@ int		check_result(char *board)
 
 void	play_the_game(char *board)
 {
-	int moves_count;
 	int winner;
 	void (*player_one)(char *);
 	void (*player_two)(char *);
 
 	moves_count = 0;
-	player_one = &random_ai_move; //&AI_move;
-	player_two = &random_ai_move; //&AI_move;
+	player_one = &ai_move; // &random_ai_move; //&AI_move;
+	player_two = &ai_move; // &random_ai_move; //&AI_move;
 	if (g_player_choice == 'X')
 		player_one = &player_move;
 	else
@@ -142,6 +210,8 @@ int		main(void)
 	while (g_player_choice != 'X' && g_player_choice != 'O');
 	ai_choice ^= g_player_choice;
 	memset(board, ' ', 9);
+
+	// printf("%d", get_chances(board, player_choice, move));
 	play_the_game(board);
 	return (0);
 }
