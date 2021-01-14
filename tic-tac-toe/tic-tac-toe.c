@@ -62,14 +62,18 @@ void	random_ai_move(char *board)
 
 void	ai_move(char *board)
 {
-	int i;
-	int max = -1000;
-	int max_index = 0;
-	int temp;
+
+	int		i;
+	int		max;
+	int		max_index[9];
+	int		max_count;
+	int		temp;
 
 	i = 0;
+	max_count = 0;
+	max = -1;
 	printf("AI move is: \n");
-	while (i < 8)
+	while (i < 9)
 	{
 		if(board[i] != ' ')
 		{
@@ -80,19 +84,23 @@ void	ai_move(char *board)
 		temp = get_chances(board, g_player_choice, g_moves_count);
 		board[i] = ' ';
 		printf("%d\n",temp);
-		if(temp == 10000)
+		if((max == -1) ||\
+				((temp > 0) && ((temp / 10000 * (max % 10000 + max / 10000)) > ((temp % 10000 + temp / 10000) * max / 10000))))
 		{
-			max_index = i;
-			break;
-		}
-		if (temp > max)
-		{
+			max_count = 1;
+			max_index[0] = i;
 			max = temp;
-			max_index = i;
+		}
+		else if((temp / 10000 * (max % 10000 + max / 10000)) == ((temp % 10000 + temp / 10000) * max / 10000))
+		{
+			max_index[max_count] = i;
+			max_count++;
 		}
 		i++;
 	}
-	board[max_index] = g_ai_choice;
+	srand(time(0));
+	printf("\n%d\n", max_count);
+	board[max_index[rand() % max_count]] = g_ai_choice;
 }
 
 int get_chances(char *board, char order, int move)
@@ -132,6 +140,11 @@ int get_chances(char *board, char order, int move)
 		{
 			board[i] = ' ';
 			return (-1);
+		}
+		if(temp < 0)
+		{
+			board[i] = ' ';
+			return (0);
 		}
 		board[i] = ' ';
 		i++;
