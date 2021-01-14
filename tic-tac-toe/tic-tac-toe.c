@@ -5,8 +5,9 @@
 
 char	g_XO = 'X' ^ 'O';
 char	g_player_choice;
-char 	ai_choice = 'X' ^ 'O';
-int		moves_count = 0;
+char 	g_ai_choice;
+
+int		g_moves_count;
 
 int check_result(char *);
 int get_chances(char *board, char order, int move);
@@ -43,7 +44,7 @@ void	player_move(char *board)
 
 void	player2_move(char *board)
 {
-	move(board, ai_choice);
+	move(board, g_ai_choice);
 }
 
 void	random_ai_move(char *board)
@@ -56,7 +57,7 @@ void	random_ai_move(char *board)
 	while (board[i] != ' ')
 		if (++i > 8)
 			i = 0;
-	board[i] = ai_choice;
+	board[i] = g_ai_choice;
 }
 
 void	ai_move(char *board)
@@ -75,8 +76,8 @@ void	ai_move(char *board)
 			i++;
 			continue;
 		}
-		board[i] = ai_choice;
-		temp = get_chances(board, g_player_choice, moves_count);
+		board[i] = g_ai_choice;
+		temp = get_chances(board, g_player_choice, g_moves_count);
 		board[i] = ' ';
 		printf("%d\n",temp);
 		if(temp == 10000)
@@ -91,7 +92,7 @@ void	ai_move(char *board)
 		}
 		i++;
 	}
-	board[max_index] = ai_choice;
+	board[max_index] = g_ai_choice;
 }
 
 int get_chances(char *board, char order, int move)
@@ -107,7 +108,7 @@ int get_chances(char *board, char order, int move)
 //	show_board(board);
 	//char c;
 	//scanf(" %c", &c);
-	if (temp == ai_choice)
+	if (temp == g_ai_choice)
 		return (10000);
 	if (temp == g_player_choice)
 		return (-1);
@@ -127,7 +128,7 @@ int get_chances(char *board, char order, int move)
 			result += 1;
 		if (temp >= 10000)
 			result += temp;
-		if (temp < 0 && order != ai_choice)
+		if (temp < 0 && order != g_ai_choice)
 		{
 			board[i] = ' ';
 			return (-1);
@@ -166,36 +167,31 @@ int check_result(char *board)
 
 void	play_the_game(char *board)
 {
-	int winner;
-	void (*player_one)(char *);
-	void (*player_two)(char *);
+	int		winner;
+	void	(*player_one)(char *);
+	void	(*player_two)(char *);
 
-	moves_count = 0;
 	player_one = &ai_move; // &random_ai_move; //&AI_move;
 	player_two = &ai_move; // &random_ai_move; //&AI_move;
 	if (g_player_choice == 'X')
 		player_one = &player_move;
 	else
 		player_two = &player_move;
-	while (moves_count < 9)
+	while (g_moves_count < 9)
 	{
-		player_one(board);
+		if(g_moves_count % 2 == 0)
+			player_one(board);
+		else
+			player_two(board);
 		show_board(board);
-		if (moves_count > 3 && (winner = check_result(board)) != 0)
+		if (g_moves_count > 3 && (winner = check_result(board)) != 0)
 		{
 			printf("\n------\nPlayer %c is WINner!\n------\n", winner);
 			return;
 		}
-		moves_count++;
-		player_two(board);
-		show_board(board);
-		if (moves_count > 3 && (winner = check_result(board)) != 0)
-		{
-			printf("\n------\nPlayer %c is WINner!\n------\n", winner);
-			return;
-		}
-		moves_count++;
+		g_moves_count++;
 	}
+	printf("\n| IT IS DRAW! | \n");
 }
 
 int		main(void)
@@ -208,9 +204,8 @@ int		main(void)
 		scanf(" %c", &g_player_choice); //whitespace specificator cool
 	}
 	while (g_player_choice != 'X' && g_player_choice != 'O');
-	ai_choice ^= g_player_choice;
+	g_ai_choice = g_XO ^ g_player_choice;
 	memset(board, ' ', 9);
-
 	// printf("%d", get_chances(board, player_choice, move));
 	play_the_game(board);
 	return (0);
