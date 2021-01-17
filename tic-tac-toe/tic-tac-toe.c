@@ -1,16 +1,9 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
+#include "tic-tac-toe.h"
 
-char	g_XO = 'X' ^ 'O';
-char	g_player_choice;
-char 	g_ai_choice;
-
-int		g_moves_count;
-
-int check_result(char *);
-int get_chances(char *board, char order, int move);
+ char    g_XO;
+ char    g_player_choice;
+ char    g_ai_choice;
+ int      g_moves_count;
 
 void	show_board(char *board)
 {
@@ -45,112 +38,6 @@ void	player_move(char *board)
 void	player2_move(char *board)
 {
 	move(board, g_ai_choice);
-}
-
-void	random_ai_move(char *board)
-{
-	int i;
-
-	srand(time(NULL));
-	i = rand() % 9;
-	printf("Random AI move is: \n");
-	while (board[i] != ' ')
-		if (++i > 8)
-			i = 0;
-	board[i] = g_ai_choice;
-}
-
-void	ai_move(char *board)
-{
-
-	int		i;
-	int		max;
-	int		max_index[9];
-	int		max_count;
-	int		temp;
-
-	i = 0;
-	max_count = 0;
-	max = -1;
-	printf("AI move is: \n");
-	while (i < 9)
-	{
-		if(board[i] != ' ')
-		{
-			i++;
-			continue;
-		}
-		board[i] = g_ai_choice;
-		temp = get_chances(board, g_player_choice, g_moves_count);
-		board[i] = ' ';
-		printf("%d\n",temp);
-		if((max == -1) ||\
-				((temp > 0) && ((temp / 10000 * (max % 10000 + max / 10000)) > ((temp % 10000 + temp / 10000) * max / 10000))))
-		{
-			max_count = 1;
-			max_index[0] = i;
-			max = temp;
-		}
-		else if((temp / 10000 * (max % 10000 + max / 10000)) == ((temp % 10000 + temp / 10000) * max / 10000))
-		{
-			max_index[max_count] = i;
-			max_count++;
-		}
-		i++;
-	}
-	srand(time(0));
-	printf("\n%d\n", max_count);
-	board[max_index[rand() % max_count]] = g_ai_choice;
-}
-
-int get_chances(char *board, char order, int move)
-{
-	int i;
-	int result;
-	int temp;
-
-	i = 0;
-	result = 0;
-	temp = check_result(board);
-//	printf("temp %d\n", temp);
-//	show_board(board);
-	//char c;
-	//scanf(" %c", &c);
-	if (temp == g_ai_choice)
-		return (10000);
-	if (temp == g_player_choice)
-		return (-1);
-	if (move == 9)
-		return (0);
-
-	while (i < 9)
-	{
-		if (board[i] != ' ')
-		{
-			i++;
-			continue;
-		}
-		board[i] = order;
-		temp = get_chances(board, g_XO ^ order, move + 1);
-		if (temp == 0)
-			result += 1;
-		if (temp >= 10000)
-			result += temp;
-		if (temp < 0 && order != g_ai_choice)
-		{
-			board[i] = ' ';
-			return (-1);
-		}
-		if(temp < 0)
-		{
-			board[i] = ' ';
-			return (0);
-		}
-		board[i] = ' ';
-		i++;
-	}
-
-	return (result);
 }
 
 int check_result(char *board)
@@ -210,7 +97,7 @@ void	play_the_game(char *board)
 int		main(void)
 {
 	char board[9];
-
+	g_XO = 'X' ^ 'O';
 	g_player_choice = 0;
 	do {
 		printf("Select X or O\n");
